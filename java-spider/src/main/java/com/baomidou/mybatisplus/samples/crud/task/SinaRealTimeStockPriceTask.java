@@ -39,6 +39,7 @@ public class SinaRealTimeStockPriceTask {
     }
 
     public void start() {
+        log.info("任务【{}】开始！", this.getClass().getSimpleName());
         // 分页查询
         int currentPage = DEFAULT_CURRENT_PAGE;
         long startTime = System.currentTimeMillis();

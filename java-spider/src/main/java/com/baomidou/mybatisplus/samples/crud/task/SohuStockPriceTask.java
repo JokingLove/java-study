@@ -65,6 +65,7 @@ public class SohuStockPriceTask {
     }
 
     public void start() {
+        log.info("任务【{}】开始！", this.getClass().getSimpleName());
         long start = System.currentTimeMillis();
         int currentPage = DEFAULT_CURRENT_PAGE;
         while(true) {
@@ -87,6 +88,7 @@ public class SohuStockPriceTask {
                 log.info("查询数据为空，程序退出！");
                 break;
             }
+            currentPage ++;
         }
         long time = System.currentTimeMillis() - start;
         log.info("处理完成，正常退出！耗时：{}s", time);

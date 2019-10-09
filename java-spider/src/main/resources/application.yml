@@ -15,5 +15,5 @@ logging:
 
 cron:
   spider:
-    sohu-task: 0 14 9 ? * *
+    sohu-task: 0 30 23 ? * *
     sina-real-time-task: 0 30 15 ? * *
