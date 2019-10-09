@@ -2,9 +2,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/crown
+    url: jdbc:mysql://10.105.19.18:3307/crown?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
     username: root
-    password: 123456
+    password: root
 
 
 # Logger Config
@@ -12,3 +12,8 @@ logging:
   level:
     com.baomidou.mybatisplus.samples: info
 # MyBatis-Plus 配置该演示无
+
+cron:
+  spider:
+    sohu-task: 0 14 9 ? * *
+    sina-real-time-task: 0 30 15 ? * *

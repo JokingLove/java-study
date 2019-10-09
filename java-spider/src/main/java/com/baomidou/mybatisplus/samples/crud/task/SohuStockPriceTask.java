@@ -3,20 +3,21 @@ package com.baomidou.mybatisplus.samples.crud.task;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.samples.crud.spider.entity.SohuResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.samples.crud.model.SohuResult;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.Stock;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.StockPrice;
 import com.baomidou.mybatisplus.samples.crud.spider.service.IStockPriceService;
 import com.baomidou.mybatisplus.samples.crud.spider.service.IStockService;
 import com.baomidou.mybatisplus.samples.crud.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class SohuStockPriceTask implements ApplicationRunner {
+public class SohuStockPriceTask {
 
     /**
      * # "2011-06-30", 时间
@@ -43,7 +44,10 @@ public class SohuStockPriceTask implements ApplicationRunner {
      */
 
     private static final int PRE_SAVE_COUNT = 500;
-    private static final String BASE_URL = "http://q.stock.sohu.com/hisHq?start=19910422&end=20190930&stat=1&order=A&code=cn_";
+    /**
+     * start=19910422&end=20190930&
+     */
+    private static final String BASE_URL = "http://q.stock.sohu.com/hisHq?stat=1&order=A&code=cn_";
     private final IStockPriceService stockPriceService;
     private final IStockService stockService;
     private final RestTemplate restTemplate;
@@ -56,16 +60,15 @@ public class SohuStockPriceTask implements ApplicationRunner {
         this.threadPool = threadPool;
     }
 
-    private void start() {
+    public void start() {
         List<Stock> list = stockService.lambdaQuery()
-                .isNull(Stock::getSpiderTime)
+                .notLike(Stock::getSpiderTime, LocalDate.now().toString())
                 .orderByAsc(Stock::getId)
                 .list();
-        if(CollectionUtils.isNotEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             list.forEach(stock -> {
                 try {
-                    String url = BASE_URL + stock.getCode();
-                    downloadAndResolve(url, stock);
+                    downloadAndResolve(stock);
                     log.info("处理完成，线程休息。。。");
                     Thread.sleep(3000);
                 } catch (Exception e) {
@@ -76,25 +79,57 @@ public class SohuStockPriceTask implements ApplicationRunner {
         }
     }
 
-    private void downloadAndResolve(String url, Stock stock) {
-        log.info("开始处理数据：{}", stock);
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-        String resultStr = responseEntity.getBody();
-        if(StringUtils.isNotEmpty(resultStr)) {
-            List<SohuResult> sohuResults = JSON.parseArray(resultStr, SohuResult.class);
-            if(CollectionUtils.isNotEmpty(sohuResults)) {
-                List<StockPrice> stockPrices = resolveStockPrices(sohuResults, stock);
-                // 插入数据库
-                if(CollectionUtils.isNotEmpty(stockPrices)) {
-                    threadPool.execute(() -> this.asyncBatchSave(stockPrices, stock));
+
+    private void downloadAndResolve(Stock stock) {
+        String preUrl = resolveUrl(stock);
+        if(preUrl != null) {
+            log.info("开始处理数据：{}", preUrl);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity(preUrl, String.class);
+            String resultStr = responseEntity.getBody();
+            if (StringUtils.isNotEmpty(resultStr)) {
+                List<SohuResult> sohuResults = JSON.parseArray(resultStr, SohuResult.class);
+                if (CollectionUtils.isNotEmpty(sohuResults)) {
+                    List<StockPrice> stockPrices = resolveStockPrices(sohuResults, stock);
+                    // 插入数据库
+                    if (CollectionUtils.isNotEmpty(stockPrices)) {
+                        threadPool.execute(() -> this.asyncBatchSave(stockPrices, stock));
+                    }
                 }
             }
         }
     }
 
+    private String resolveUrl(Stock stock) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(BASE_URL).append(stock.getCode());
+        Page page = new Page();
+        page.setSize(1);
+        page.setCurrent(1);
+        StockPrice one = stockPriceService.lambdaQuery()
+                .eq(StockPrice::getStockCode, stock.getCode())
+                .orderByDesc(StockPrice::getPriceDate)
+                .last("limit 1")
+                .one();
+        final DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd");
+        if (one != null) {
+            if(one.getPriceDate().equals(LocalDate.now())) {
+                // 如果最新的一条数据就是今天的，那就不抓了
+                log.info("已经是最新的数据，不需要抓取：{}", one);
+                return null;
+            }
+            // start=19910422&end=20190930&
+            builder.append("&start=").append(one.getPriceDate().plusDays(1).format(yyyyMMdd))
+                    .append("&end=").append(LocalDate.now().format(yyyyMMdd));
+        } else {
+            builder.append("&start=").append(LocalDate.now().minusWeeks(1).format(yyyyMMdd))
+                    .append("&end=").append(LocalDate.now().format(yyyyMMdd));
+        }
+        return builder.toString();
+    }
+
     private void asyncBatchSave(List<StockPrice> stockPrices, Stock stock) {
         int size = stockPrices.size();
-        if(size >= PRE_SAVE_COUNT) {
+        if (size >= PRE_SAVE_COUNT) {
             boolean flag = size % PRE_SAVE_COUNT == 0;
             int count = flag ? size / PRE_SAVE_COUNT : size / PRE_SAVE_COUNT + 1;
             for (int i = 0; i < count; i++) {
@@ -112,7 +147,7 @@ public class SohuStockPriceTask implements ApplicationRunner {
         }
         boolean update = stockService.lambdaUpdate()
                 .eq(Stock::getId, stock.getId())
-                .set(Stock::getSpiderTime, LocalDate.now())
+                .set(Stock::getSpiderTime, ZonedDateTime.now().toLocalDateTime())
                 .update();
         log.info("更新 stock-spider_time【{}】结果: {}", stock.getId(), update);
     }
@@ -122,7 +157,7 @@ public class SohuStockPriceTask implements ApplicationRunner {
      */
     private List<StockPrice> resolveStockPrices(List<SohuResult> sohuResults, Stock stock) {
         SohuResult sohuResult = sohuResults.get(0);
-        if(sohuResult != null) {
+        if (sohuResult != null) {
             return Arrays.stream(sohuResult.getHq())
                     .map(item -> {
                         StockPrice price = new StockPrice();
@@ -140,17 +175,13 @@ public class SohuStockPriceTask implements ApplicationRunner {
                         price.setTurnover(StringUtil.stringToBigDecimal(item[8]));
                         price.setTurnoverRateStr(item[9]);
                         price.setTurnoverRate(StringUtil.transPercentToFloat(item[9]));
-                        price.setUpdateTime(LocalDate.now());
+                        price.setUpdateTime(ZonedDateTime.now().toLocalDateTime());
                         return price;
                     }).collect(Collectors.toList());
         }
         return null;
     }
 
-    @Override
-    public void run(ApplicationArguments args)  {
-        start();
-    }
 }
 
 

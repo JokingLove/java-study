@@ -1,4 +1,4 @@
-package com.baomidou.mybatisplus.samples.crud.spider.entity;
+package com.baomidou.mybatisplus.samples.crud.model;
 
 import lombok.Data;
 import lombok.ToString;
