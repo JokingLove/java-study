@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static com.baomidou.mybatisplus.samples.crud.constants.Constants.DEFAULT_CURRENT_PAGE;
@@ -88,27 +89,45 @@ public class SinaRealTimeStockPriceTask {
             SinaRealTimeResult sinaRealTimeResult = new SinaRealTimeResult(message);
             List<List<String>> result = sinaRealTimeResult.getResult();
             if (CollectionUtils.isNotEmpty(result)) {
-                result.forEach(this::handleStockPrice);
+                result.forEach(stockList -> {
+                    final Stock[] stock = {null};
+                    subList.stream().filter(item -> item.getCode().equals(stockList.get(0)))
+                            .findFirst().ifPresent(item -> stock[0] = item);
+                    handleStockPrice(stockList, stock[0]);
+                });
             }
         }
     }
 
-    private void handleStockPrice(List<String> strings) {
+    private void handleStockPrice(List<String> strings, Stock stock) {
         StockPrice stockPrice = SinaRealTimeResult.buildStockPrice(strings);
-        Integer count = stockPriceService.lambdaQuery()
-                .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())
-                .eq(StockPrice::getStockCode, stockPrice.getStockCode())
-                .count();
-        if (count != null && count > 0) {
-            log.info("更新数据：{}", stockPrice);
-            stockPriceService.lambdaUpdate()
+        if(stockPrice != null) {
+            Integer count = stockPriceService.lambdaQuery()
                     .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())
                     .eq(StockPrice::getStockCode, stockPrice.getStockCode())
-                    .update(stockPrice);
-        } else {
-            log.info("插入数据：{}", stockPrice);
-            stockPriceService.save(stockPrice);
+                    .count();
+            if (count != null && count > 0) {
+                log.info("更新数据：{}", stockPrice);
+                stockPriceService.lambdaUpdate()
+                        .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())
+                        .eq(StockPrice::getStockCode, stockPrice.getStockCode())
+                        .update(stockPrice);
+            } else {
+                log.info("插入数据：{}", stockPrice);
+                stockPriceService.save(stockPrice);
+            }
+            if (stock != null) {
+                this.updateStockSpiderTime(stock);
+            }
         }
+    }
+
+    private void updateStockSpiderTime(Stock stock) {
+        boolean update = stockService.lambdaUpdate()
+                .eq(Stock::getId, stock.getId())
+                .set(Stock::getSpiderTime, ZonedDateTime.now().toLocalDateTime())
+                .update();
+        log.info("更新 stock-spider_time【{}】结果: {}", stock.getId(), update);
     }
 
 }

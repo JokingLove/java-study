@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.samples.crud.spider.service.IStockPriceService;
 import com.baomidou.mybatisplus.samples.crud.spider.service.IStockService;
 import com.baomidou.mybatisplus.samples.crud.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -56,6 +57,9 @@ public class SohuStockPriceTask {
     private final IStockService stockService;
     private final RestTemplate restTemplate;
     private final ExecutorService threadPool;
+
+    @Value("${spider.sohu-task.batch}")
+    private boolean batch;
 
     public SohuStockPriceTask(IStockPriceService stockPriceService, IStockService stockService, RestTemplate restTemplate, ExecutorService threadPool) {
         this.stockPriceService = stockPriceService;
@@ -107,10 +111,37 @@ public class SohuStockPriceTask {
                     List<StockPrice> stockPrices = resolveStockPrices(sohuResults, stock);
                     // 插入数据库
                     if (CollectionUtils.isNotEmpty(stockPrices)) {
-                        threadPool.execute(() -> this.asyncBatchSave(stockPrices, stock));
+                        if(batch) {
+                            threadPool.execute(() -> this.asyncBatchSave(stockPrices, stock));
+                        } else {
+                            // 同步操作
+                            threadPool.execute(() -> this.updateOrSaveStockPrices(stockPrices, stock));
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private void updateOrSaveStockPrices(List<StockPrice> stockPrices, Stock stock) {
+        if(CollectionUtils.isNotEmpty(stockPrices)) {
+            stockPrices.forEach(stockPrice -> {
+                StockPrice dbStockPrice = stockPriceService.lambdaQuery()
+                        .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())
+                        .eq(StockPrice::getStockCode, stockPrice.getStockCode())
+                        .last("limit 1")
+                        .one();
+                if(dbStockPrice != null) {
+                    // 更新
+                    log.info("已经存在 【{}-{}】,更新！", stockPrice.getStockCode(), stockPrice.getPriceDate());
+                    stockPrice.setId(dbStockPrice.getId());
+                    stockPriceService.updateById(stockPrice);
+                } else {
+                    log.info("数据不存在【{}-{}】,插入！", stockPrice.getStockCode(), stockPrice.getPriceDate());
+                    stockPriceService.save(stockPrice);
+                }
+            });
+            this.updateStockSpiderTime(stock);
         }
     }
 
@@ -133,7 +164,7 @@ public class SohuStockPriceTask {
                 return null;
             }
             // start=19910422&end=20190930&
-            builder.append("&start=").append(one.getPriceDate().plusDays(1).format(yyyyMMdd))
+            builder.append("&start=").append(one.getPriceDate().minusDays(3).format(yyyyMMdd))
                     .append("&end=").append(LocalDate.now().format(yyyyMMdd));
         } else {
             builder.append("&start=").append(LocalDate.now().minusWeeks(1).format(yyyyMMdd))
@@ -160,6 +191,10 @@ public class SohuStockPriceTask {
             boolean b = stockPriceService.saveBatch(stockPrices);
             log.info("批量更新结果: {}", b);
         }
+        this.updateStockSpiderTime(stock);
+    }
+
+    private void updateStockSpiderTime(Stock stock) {
         boolean update = stockService.lambdaUpdate()
                 .eq(Stock::getId, stock.getId())
                 .set(Stock::getSpiderTime, ZonedDateTime.now().toLocalDateTime())

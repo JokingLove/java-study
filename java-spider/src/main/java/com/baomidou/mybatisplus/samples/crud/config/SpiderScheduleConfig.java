@@ -22,12 +22,12 @@ public class SpiderScheduleConfig {
     }
 
 
-    @Scheduled(cron = "${cron.spider.sohu-task}")
+    @Scheduled(cron = "${spider.sohu-task.cron}")
     public void spiderSohuStockData() {
         sohuStockPriceTask.start();
     }
 
-    @Scheduled(cron = "${cron.spider.sina-real-time-task}")
+    @Scheduled(cron = "${spider.sina-real-time-task.cron}")
     public void spiderSinaRealTimePriceTask() {
         sinaRealTimeStockPriceTask.start();
     }

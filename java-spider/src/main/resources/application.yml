@@ -13,7 +13,10 @@ logging:
     com.baomidou.mybatisplus.samples: info
 # MyBatis-Plus 配置该演示无
 
-cron:
-  spider:
-    sohu-task: 0 30 23 ? * *
-    sina-real-time-task: 0 30 15 ? * *
+
+spider:
+  sohu-task:
+    cron: 0 30 04 ? * *
+    batch: false
+  sina-real-time-task:
+    cron: 0 30 15 ? * *
