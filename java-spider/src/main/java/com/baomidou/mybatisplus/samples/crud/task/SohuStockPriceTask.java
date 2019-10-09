@@ -1,6 +1,7 @@
 package com.baomidou.mybatisplus.samples.crud.task;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -22,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
+
+import static com.baomidou.mybatisplus.samples.crud.constants.Constants.DEFAULT_CURRENT_PAGE;
+import static com.baomidou.mybatisplus.samples.crud.constants.Constants.DEFAULT_PAGE_SIZE;
 
 /**
  * @author joking
@@ -61,22 +65,31 @@ public class SohuStockPriceTask {
     }
 
     public void start() {
-        List<Stock> list = stockService.lambdaQuery()
-                .notLike(Stock::getSpiderTime, LocalDate.now().toString())
-                .orderByAsc(Stock::getId)
-                .list();
-        if (CollectionUtils.isNotEmpty(list)) {
-            list.forEach(stock -> {
-                try {
-                    downloadAndResolve(stock);
-                    log.info("处理完成，线程休息。。。");
-                    Thread.sleep(3000);
-                } catch (Exception e) {
-                    log.error("出错了：{}", e.getMessage());
-                }
-            });
-            log.info("处理完成，正常退出！");
+        long start = System.currentTimeMillis();
+        int currentPage = DEFAULT_CURRENT_PAGE;
+        while(true) {
+            Page<Stock> page = new Page<>(currentPage, DEFAULT_PAGE_SIZE);
+            IPage<Stock> resultPage = stockService.lambdaQuery()
+                    .orderByAsc(Stock::getId)
+                    .page(page);
+            List<Stock> list = resultPage.getRecords();
+            if (CollectionUtils.isNotEmpty(list)) {
+                list.forEach(stock -> {
+                    try {
+                        downloadAndResolve(stock);
+                        log.info("处理完成，线程休息。。。");
+                        Thread.sleep(3000);
+                    } catch (Exception e) {
+                        log.error("出错了：{}", e.getMessage());
+                    }
+                });
+            } else {
+                log.info("查询数据为空，程序退出！");
+                break;
+            }
         }
+        long time = System.currentTimeMillis() - start;
+        log.info("处理完成，正常退出！耗时：{}s", time);
     }
 
 
