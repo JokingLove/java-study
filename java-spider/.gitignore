@@ -1,0 +1,48 @@
+application-local.properties
+
+logs/
+
+### Linux ###
+~/
+
+### maven ###
+target/
+
+### mac ###
+.DS_Store
+
+### start.spring.io ###
+HELP.md
+/target/
+.mvn
+!.mvn/wrapper/maven-wrapper.jar
+
+
+### STS ###
+.classpath
+.project
+.settings
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+### jrebel ###
+rebel.xml
