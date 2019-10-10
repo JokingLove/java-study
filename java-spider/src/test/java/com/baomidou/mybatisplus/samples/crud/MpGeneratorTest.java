@@ -29,7 +29,7 @@ public class MpGeneratorTest {
 
     @Test
     public void generateCode() {
-        generate("spider", "tb_stock_price", "tb_stock", "tb_category");
+        generate("spider", "tb_stock_analysis");
     }
 
     private void generate(String moduleName, String... tableNamesInclude){
@@ -47,7 +47,7 @@ public class MpGeneratorTest {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3307/crown?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=GMT%2B8");
+        dsc.setUrl("jdbc:mysql://local.com:3307/crown?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=GMT%2B8");
         // dsc.setSchemaName("public");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");

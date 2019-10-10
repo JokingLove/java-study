@@ -71,5 +71,11 @@ public class Stock implements Serializable {
     @TableField("spider_time")
     private LocalDateTime spiderTime;
 
+    /**
+     * 计算时间
+     */
+    @TableField("compute_time")
+    private LocalDateTime computeTime;
+
 
 }

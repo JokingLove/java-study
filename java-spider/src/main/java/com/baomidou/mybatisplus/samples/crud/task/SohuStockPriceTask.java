@@ -139,18 +139,22 @@ public class SohuStockPriceTask {
                         .eq(StockPrice::getStockCode, stockPrice.getStockCode())
                         .last("limit 1")
                         .one();
-                if(dbStockPrice != null) {
-                    if(dbStockPrice.getPriceDate().isAfter(LocalDate.now().minusDays(2))
-                      && dbStockPrice.getPriceDate().isBefore(LocalDate.now().plusDays(1))) {
-                        // 更新
-                        log.info("已经存在 【{}-{}】,更新！", stockPrice.getStockCode(), stockPrice.getPriceDate());
-                        stockPrice.setId(dbStockPrice.getId());
-                        stockPriceService.updateById(stockPrice);
-                    }  // NOTHING
+                try {
+                    if (dbStockPrice != null) {
+                        if (dbStockPrice.getPriceDate().isAfter(LocalDate.now().minusDays(2))
+                                && dbStockPrice.getPriceDate().isBefore(LocalDate.now().plusDays(1))) {
+                            // 更新
+                            log.info("已经存在 【{}-{}】,更新！", stockPrice.getStockCode(), stockPrice.getPriceDate());
+                            stockPrice.setId(dbStockPrice.getId());
+                            stockPriceService.updateById(stockPrice);
+                        }  // NOTHING
 
-                } else {
-                    log.info("数据不存在【{}-{}】,插入！", stockPrice.getStockCode(), stockPrice.getPriceDate());
-                    stockPriceService.save(stockPrice);
+                    } else {
+                        log.info("数据不存在【{}-{}】,插入！", stockPrice.getStockCode(), stockPrice.getPriceDate());
+                        stockPriceService.save(stockPrice);
+                    }
+                } catch (Exception e) {
+                    log.error("更新数据库出错：{} \n {}", e.getMessage(), stockPrice);
                 }
             });
             this.updateStockSpiderTime(stock);
@@ -176,7 +180,8 @@ public class SohuStockPriceTask {
             builder.append("&start=").append(one.getPriceDate().minusDays(1).format(yyyyMMdd))
                     .append("&end=").append(LocalDate.now().format(yyyyMMdd));
         } else {
-            builder.append("&start=").append("19900101")
+            // 最近三个月的
+            builder.append("&start=").append(LocalDate.now().minusMonths(3).format(yyyyMMdd))
                     .append("&end=").append(LocalDate.now().format(yyyyMMdd));
         }
         return builder.toString();
