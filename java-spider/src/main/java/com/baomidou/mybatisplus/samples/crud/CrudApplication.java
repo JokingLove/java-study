@@ -8,8 +8,7 @@ public class CrudApplication {
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(CrudApplication.class)
-                .build(args)
-                .run();
+                .run(args);
     }
 }
 

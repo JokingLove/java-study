@@ -61,6 +61,9 @@ public class SohuStockPriceTask {
     @Value("${spider.sohu-task.batch}")
     private boolean batch;
 
+    @Value("${spider.sohu-task.sleep-time}")
+    private long sleepTime;
+
     public SohuStockPriceTask(IStockPriceService stockPriceService, IStockService stockService, RestTemplate restTemplate, ExecutorService threadPool) {
         this.stockPriceService = stockPriceService;
         this.stockService = stockService;
@@ -75,6 +78,7 @@ public class SohuStockPriceTask {
         while(true) {
             Page<Stock> page = new Page<>(currentPage, DEFAULT_PAGE_SIZE);
             IPage<Stock> resultPage = stockService.lambdaQuery()
+                    .notLike(Stock::getSpiderTime, LocalDate.now().toString())
                     .orderByAsc(Stock::getId)
                     .page(page);
             List<Stock> list = resultPage.getRecords();
@@ -83,7 +87,11 @@ public class SohuStockPriceTask {
                     try {
                         downloadAndResolve(stock);
                         log.info("处理完成，线程休息。。。");
-                        Thread.sleep(3000);
+                        if(sleepTime > 0) {
+                            Thread.sleep(sleepTime);
+                        } else {
+                            Thread.sleep(1000);
+                        }
                     } catch (Exception e) {
                         log.error("出错了：{}", e.getMessage());
                     }
@@ -132,10 +140,14 @@ public class SohuStockPriceTask {
                         .last("limit 1")
                         .one();
                 if(dbStockPrice != null) {
-                    // 更新
-                    log.info("已经存在 【{}-{}】,更新！", stockPrice.getStockCode(), stockPrice.getPriceDate());
-                    stockPrice.setId(dbStockPrice.getId());
-                    stockPriceService.updateById(stockPrice);
+                    if(dbStockPrice.getPriceDate().isAfter(LocalDate.now().minusDays(2))
+                      && dbStockPrice.getPriceDate().isBefore(LocalDate.now().plusDays(1))) {
+                        // 更新
+                        log.info("已经存在 【{}-{}】,更新！", stockPrice.getStockCode(), stockPrice.getPriceDate());
+                        stockPrice.setId(dbStockPrice.getId());
+                        stockPriceService.updateById(stockPrice);
+                    }  // NOTHING
+
                 } else {
                     log.info("数据不存在【{}-{}】,插入！", stockPrice.getStockCode(), stockPrice.getPriceDate());
                     stockPriceService.save(stockPrice);
@@ -148,9 +160,6 @@ public class SohuStockPriceTask {
     private String resolveUrl(Stock stock) {
         StringBuilder builder = new StringBuilder();
         builder.append(BASE_URL).append(stock.getCode());
-        Page page = new Page();
-        page.setSize(1);
-        page.setCurrent(1);
         StockPrice one = stockPriceService.lambdaQuery()
                 .eq(StockPrice::getStockCode, stock.getCode())
                 .orderByDesc(StockPrice::getPriceDate)
@@ -164,10 +173,10 @@ public class SohuStockPriceTask {
                 return null;
             }
             // start=19910422&end=20190930&
-            builder.append("&start=").append(one.getPriceDate().minusDays(3).format(yyyyMMdd))
+            builder.append("&start=").append(one.getPriceDate().minusDays(1).format(yyyyMMdd))
                     .append("&end=").append(LocalDate.now().format(yyyyMMdd));
         } else {
-            builder.append("&start=").append(LocalDate.now().minusWeeks(1).format(yyyyMMdd))
+            builder.append("&start=").append("19900101")
                     .append("&end=").append(LocalDate.now().format(yyyyMMdd));
         }
         return builder.toString();

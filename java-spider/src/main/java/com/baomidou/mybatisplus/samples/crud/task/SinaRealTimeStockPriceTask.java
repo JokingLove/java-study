@@ -100,7 +100,7 @@ public class SinaRealTimeStockPriceTask {
     }
 
     private void handleStockPrice(List<String> strings, Stock stock) {
-        StockPrice stockPrice = SinaRealTimeResult.buildStockPrice(strings);
+        StockPrice stockPrice = SinaRealTimeResult.buildStockPrice(strings, stock);
         if(stockPrice != null) {
             Integer count = stockPriceService.lambdaQuery()
                     .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())

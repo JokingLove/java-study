@@ -21,7 +21,7 @@ public class StringUtil {
         try {
             if (StringUtils.isNotEmpty(val)) {
                 String value = val.split("%")[0];
-                return Float.parseFloat(value) / 100;
+                return Float.parseFloat(value.trim()) / 100;
             }
         } catch (Exception e) {
             log.error("transPercentToFloat error: {}", e.getMessage());
@@ -32,7 +32,7 @@ public class StringUtil {
     public static Float stringToFloat(String val) {
         try{
             if(StringUtils.isNotEmpty(val)) {
-                return Float.parseFloat(val);
+                return Float.parseFloat(val.trim());
             }
         } catch (Exception e) {
             log.error("stringToFloat error: {}", e.getMessage());
@@ -42,7 +42,7 @@ public class StringUtil {
 
     public static LocalDate stringToLocalDate(String val) {
         try{
-            if(StringUtils.isNotEmpty(val)) {
+            if(StringUtils.isNotEmpty(val.trim())) {
                 return LocalDate.parse(val);
             }
         } catch (Exception e) {
@@ -54,7 +54,7 @@ public class StringUtil {
     public static BigDecimal stringToBigDecimal(String val) {
         try{
             if(StringUtils.isNotEmpty(val)) {
-                return BigDecimal.valueOf(Double.parseDouble(val));
+                return BigDecimal.valueOf(Double.parseDouble(val.trim()));
             }
         } catch (Exception e) {
             log.error("stringToBigDecimal error: {}", e.getMessage());

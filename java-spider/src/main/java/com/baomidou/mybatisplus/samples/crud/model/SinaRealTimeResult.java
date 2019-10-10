@@ -122,7 +122,7 @@ public class SinaRealTimeResult {
      * 30：”2008-01-11″，日期；
      * 31：”15:05:32″，时间；
      */
-    public static StockPrice buildStockPrice(List<String> list) {
+    public static StockPrice buildStockPrice(List<String> list, Stock stock) {
         if (list != null && !list.isEmpty()) {
             StockPrice stockPrice = new StockPrice();
             stockPrice.setPriceDate(stringToLocalDate(list.get(31)));
@@ -133,6 +133,8 @@ public class SinaRealTimeResult {
             stockPrice.setLowstPrice(stringToFloat(list.get(6)));
             stockPrice.setVolume(stringToBigDecimal(list.get(9)));
 
+            stockPrice.setStockId(stock.getId());
+            stockPrice.setStockCode(stock.getCode());
             stockPrice.setUpdateTime(ZonedDateTime.now().toLocalDateTime());
             return stockPrice;
         }

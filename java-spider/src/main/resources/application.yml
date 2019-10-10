@@ -16,7 +16,8 @@ logging:
 
 spider:
   sohu-task:
-    cron: 0 30 04 ? * *
-    batch: false
+    cron: 0 30 05 ? * *
+    sleep-time: 100  # 每次处理间隔时间，毫秒
+    batch: false     # 是否批量插入
   sina-real-time-task:
     cron: 0 30 15 ? * *

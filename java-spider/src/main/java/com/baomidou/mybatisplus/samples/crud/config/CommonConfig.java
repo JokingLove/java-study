@@ -7,13 +7,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author joking
+ */
 @Configuration
 public class CommonConfig {
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 
     @Bean
     public ExecutorService threadPool() {
