@@ -1,5 +1,6 @@
 package com.baomidou.mybatisplus.samples.crud.config;
 
+import com.baomidou.mybatisplus.samples.crud.task.AutoComputeTask;
 import com.baomidou.mybatisplus.samples.crud.task.SinaRealTimeStockPriceTask;
 import com.baomidou.mybatisplus.samples.crud.task.SohuStockPriceTask;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,13 +23,18 @@ public class SpiderScheduleConfig {
 
     private final SohuStockPriceTask sohuStockPriceTask;
     private final SinaRealTimeStockPriceTask sinaRealTimeStockPriceTask;
+    private final AutoComputeTask autoComputeTask;
 
-    public SpiderScheduleConfig(SohuStockPriceTask sohuStockPriceTask, SinaRealTimeStockPriceTask sinaRealTimeStockPriceTask) {
+    public SpiderScheduleConfig(SohuStockPriceTask sohuStockPriceTask, SinaRealTimeStockPriceTask sinaRealTimeStockPriceTask, AutoComputeTask autoComputeTask) {
         this.sohuStockPriceTask = sohuStockPriceTask;
         this.sinaRealTimeStockPriceTask = sinaRealTimeStockPriceTask;
+        this.autoComputeTask = autoComputeTask;
     }
 
 
+    /**
+     * sohu spider
+     */
     @Scheduled(cron = "${spider.sohu-task.cron}")
     public void spiderSohuStockData() {
         if(sohuEnable) {
@@ -36,10 +42,20 @@ public class SpiderScheduleConfig {
         }
     }
 
+    /**
+     * sina real time spider
+     */
     @Scheduled(cron = "${spider.sina-real-time-task.cron}")
     public void spiderSinaRealTimePriceTask() {
         if(sinaEnable) {
             sinaRealTimeStockPriceTask.start();
         }
     }
+
+    @Scheduled(cron = "${task.auto-compute.cron}")
+    public void taskAutoCompute() {
+        autoComputeTask.start();
+    }
+
+
 }

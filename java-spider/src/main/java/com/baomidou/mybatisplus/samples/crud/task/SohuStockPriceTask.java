@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.samples.crud.framework.mp.parser.ShadingTableNameHolder;
 import com.baomidou.mybatisplus.samples.crud.model.SohuResult;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.Stock;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.StockPrice;
@@ -134,6 +135,7 @@ public class SohuStockPriceTask {
     private void updateOrSaveStockPrices(List<StockPrice> stockPrices, Stock stock) {
         if(CollectionUtils.isNotEmpty(stockPrices)) {
             stockPrices.forEach(stockPrice -> {
+                setShadingTableParam(stockPrice);
                 StockPrice dbStockPrice = stockPriceService.lambdaQuery()
                         .eq(StockPrice::getPriceDate, stockPrice.getPriceDate())
                         .eq(StockPrice::getStockCode, stockPrice.getStockCode())
@@ -158,6 +160,16 @@ public class SohuStockPriceTask {
                 }
             });
             this.updateStockSpiderTime(stock);
+        }
+    }
+
+    /**
+     * 设置分表参数
+     * @param stockPrice {@link StockPrice}
+     */
+    private void setShadingTableParam(StockPrice stockPrice) {
+        if(stockPrice != null && stockPrice.getPriceDate() != null) {
+            ShadingTableNameHolder.setTableNameParams(stockPrice.getPriceDate().getYear());
         }
     }
 

@@ -3,6 +3,7 @@ package com.baomidou.mybatisplus.samples.crud.task;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.samples.crud.framework.mp.parser.ShadingTableNameHolder;
 import com.baomidou.mybatisplus.samples.crud.model.SinaRealTimeResult;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.Stock;
 import com.baomidou.mybatisplus.samples.crud.spider.entity.StockPrice;

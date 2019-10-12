@@ -56,7 +56,6 @@ public class AutoComputeTask {
                 list.forEach(stock -> {
                     try {
                         computeStockPrice(stock);
-                        log.info("处理完成，线程休息。。。");
                     } catch (Exception e) {
                         log.error("出错了：{}", e.getMessage());
                     }
@@ -102,12 +101,12 @@ public class AutoComputeTask {
 
                         analyses.add(analysis);
                     } catch (Exception e) {
-                        log.error("计算【{}】天分析出错：{}", day, e.getMessage());
+                        log.error("计算【{}-{}】天分析出错：{}", stock.getCode(), day, e.getMessage());
                     }
                 }
                 // 插入数据库
                 if(!analyses.isEmpty()) {
-                    log.info("插入数据【{}】条。", analyses.size());
+                    log.info("插入数据【{}-{}】条。", stock.getCode(), analyses.size());
                     stockAnalysisService.saveBatch(analyses);
                     // 更新 计算时间
                     stock.setComputeTime(ZonedDateTime.now().toLocalDateTime());

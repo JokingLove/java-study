@@ -1,29 +1,6 @@
-# DataSource Config
+server:
+  port: 8080
+
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.105.19.18:3307/crown?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
-    username: root
-    password: root
-
-
-# Logger Config
-logging:
-  level:
-    com.baomidou.mybatisplus.samples: info
-# MyBatis-Plus 配置该演示无
-
-
-spider:
-  sohu-task:
-    enable: true
-    cron: 0 43 17 ? * *
-    sleep-time: 100  # 每次处理间隔时间，毫秒
-    batch: false     # 是否批量插入
-  sina-real-time-task:
-    enable: false
-    cron: 0 30 15 ? * *
-
-task:
-  auto-compute:
-    days: 7,15,30,90,180
+  profiles:
+    active: dev
