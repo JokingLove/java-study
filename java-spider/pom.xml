@@ -22,7 +22,7 @@
     <skipTests>true</skipTests>
 
     <p6spy.version>3.8.5</p6spy.version>
-    <jackson.version>2.9.9.3</jackson.version>
+    <jackson.version>2.9.10.1</jackson.version>
     <fastjson.version>1.2.61</fastjson.version>
   </properties>
 
