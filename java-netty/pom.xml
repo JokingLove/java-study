@@ -30,6 +30,13 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.17.Final</version>
         </dependency>
+
+        <!-- hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.2.5</version>
+        </dependency>
     </dependencies>
 
 
