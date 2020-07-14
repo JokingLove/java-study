@@ -1,5 +1,6 @@
 package com.joking.test;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -9,11 +10,17 @@ import java.util.regex.Pattern;
 
 public class Test {
 
+
+    @PostConstruct
+    public void init() {
+        System.out.println("init 方法调用！");
+    }
+
     static final  Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
 
     private static final String  DIR = "META-INF/test/";
 
-    public static void main(String[] args) throws IOException {
+    public static void mai2n(String[] args) throws IOException {
         String name = "hah,,aha";
         String[] split = NAME_SEPARATOR.split(name);
         Arrays.asList(split).forEach(System.out::println);
@@ -29,5 +36,9 @@ public class Test {
             }
         }
 
+    }
+
+    public static void main(String[] args) {
+        new Test();
     }
 }
