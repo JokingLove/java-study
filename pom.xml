@@ -12,6 +12,7 @@
         <module>shiro-base</module>
         <module>java-netty</module>
         <module>java-mockito</module>
+        <module>springboot-start</module>
     </modules>
 
 
