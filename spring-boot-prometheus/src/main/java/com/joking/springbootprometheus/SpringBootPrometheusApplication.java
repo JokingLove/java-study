@@ -7,6 +7,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCusto
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Date;
+
 @SpringBootApplication
 public class SpringBootPrometheusApplication {
 
