@@ -1,4 +1,4 @@
-package com.joking.springbootsentinel;
+package com.joking.springbootrocketmq;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
