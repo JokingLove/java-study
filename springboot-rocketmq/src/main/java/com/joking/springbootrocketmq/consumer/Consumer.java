@@ -6,6 +6,7 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 
@@ -22,6 +23,9 @@ public class Consumer {
 
         consumer.subscribe("TopicTest1234", MessageSelector.bySql("a >= 5"));
 //        consumer.subscribe("TopicTest", "*");
+
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_TIMESTAMP);
+        consumer.setConsumeTimestamp(String.valueOf(System.currentTimeMillis()));
 
         consumer.registerMessageListener(new MessageListenerConcurrently() {
 
