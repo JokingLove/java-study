@@ -1,4 +1,4 @@
-package com.joking.springbootsentinel.sentinel;
+package com.joking.springbootrocketmq.sentinel;
 
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;
