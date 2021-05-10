@@ -13,6 +13,7 @@
         <module>java-netty</module>
         <module>java-mockito</module>
         <module>springboot-start</module>
+        <module>spring-framework</module>
     </modules>
 
 
