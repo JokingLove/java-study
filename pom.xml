@@ -14,6 +14,7 @@
         <module>java-mockito</module>
         <module>springboot-start</module>
         <module>spring-framework</module>
+        <module>java-base</module>
     </modules>
 
 
