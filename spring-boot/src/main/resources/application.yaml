@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+course:
+  name: 班级名称
+  students:
+    zhangsan:
+      name: 张三
+      sex: 男
+      age: 18
+    lisi:
+      name: 李四
+      sex: 女
+      age: 18
