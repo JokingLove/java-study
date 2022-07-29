@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "course")
+//@ConfigurationProperties(prefix = "course")
 public class CourseProperties {
 
     private String name;

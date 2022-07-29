@@ -17,19 +17,11 @@ import javax.annotation.Resource;
 @Import(CourseProperties.class)
 @SpringBootApplication
 @EnableConfigurationProperties
-public class Application implements ApplicationRunner {
-
-    @Resource
-    private CourseProperties courseConfig;
-
+public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        System.out.println(courseConfig);
-    }
 }
 
