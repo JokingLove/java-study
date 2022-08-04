@@ -24,7 +24,7 @@ public class WeightRoundRobbin {
     public static void main(String[] args) {
         for (int i = 0; i < 10; i++) {
             String server = getServer();
-            System.out.printf("%4s", server);
+            System.out.printf("%2s", server);
         }
     }
 
