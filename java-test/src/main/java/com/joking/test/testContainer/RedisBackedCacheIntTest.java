@@ -1,0 +1,31 @@
+package com.joking.test.testContainer;
+
+@Testcontainers
+public class RedisBackedCacheIntTest {
+
+    private RedisBackedCache underTest;
+
+    // container {
+    @Container
+    public GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:5.0.3-alpine"))
+        .withExposedPorts(6379);
+
+    // }
+
+    @BeforeEach
+    public void setUp() {
+        String address = redis.getHost();
+        Integer port = redis.getFirstMappedPort();
+
+        // Now we have an address and port for Redis, no matter where it is running
+        underTest = new RedisBackedCache(address, port);
+    }
+
+    @Test
+    public void testSimplePutAndGet() {
+        underTest.put("test", "example");
+
+        String retrieved = underTest.get("test");
+        assertEquals("example", retrieved);
+    }
+}
