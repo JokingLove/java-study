@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <fastjson.version>1.2.76</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <datafaker.version>1.1.0</datafaker.version>
     </properties>
 
