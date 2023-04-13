@@ -1,7 +1,5 @@
 package com.joking.netty.buffer;
 
-import jdk.internal.org.objectweb.asm.util.Printer;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -10,7 +8,6 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * @author joking

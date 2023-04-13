@@ -15,7 +15,9 @@
         <module>springboot-start</module>
         <module>spring-framework</module>
         <module>java-base</module>
+        <module>netty-chat</module>
     </modules>
+
 
 
 </project>

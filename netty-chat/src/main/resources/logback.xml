@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <property name="pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread,${myAppName},%X{X-B3-TraceId},%X{X-B3-SpanId},%X{X-B3-ParentSpanId},%X{X-Span-Export}] %-5level %logger{80}[%L] - %msg%n"/>
+
+    <property name="LOG_FILE" value="${logPath}/info.log"/>
+    <property name="LOG_FILE_ERROR" value="${logPath}/error.log"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <param name="append" value="true" />
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <Pattern>${pattern}</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <file>${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/info_%d{yyyy-MM-dd}_%i.log.zip</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <maxFileSize>20GB</maxFileSize>
+            <totalSizeCap>50GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_FILE_ERROR}</file>
+        <encoder>
+            <Pattern>${pattern}</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${logPath}/error_%d{yyyy-MM-dd}_%i.log.zip</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>300MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <root  level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+</included>
