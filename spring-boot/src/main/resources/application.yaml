@@ -12,3 +12,8 @@ course:
       name: 李四
       sex: 女
       age: 18
+
+test:
+  clazz:
+    name: hello
+    testClass: com.joking.springboot.config.Student

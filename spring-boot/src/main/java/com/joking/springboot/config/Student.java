@@ -1,6 +1,7 @@
 package com.joking.springboot.config;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -10,6 +11,7 @@ import lombok.experimental.Accessors;
  * @since 2021/5/4
  */
 @Data
+@ToString
 @Accessors(chain = true)
 public class Student {
 
