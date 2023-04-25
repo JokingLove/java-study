@@ -36,7 +36,7 @@ under the License.
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<lombok.version>1.18.10</lombok.version>
-		<mysql.version>8.0.18</mysql.version>
+		<mysql.version>8.0.28</mysql.version>
 		<dbutils.version>1.7</dbutils.version>
 	</properties>
 
