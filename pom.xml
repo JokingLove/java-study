@@ -16,6 +16,7 @@
         <module>spring-framework</module>
         <module>java-base</module>
         <module>netty-chat</module>
+        <module>springboot-mp</module>
     </modules>
 
 
