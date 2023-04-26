@@ -20,6 +20,6 @@ public class AuditFlowController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<AuditFlow> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(auditFlowService.getById(id));
+        return ResponseEntity.ok(auditFlowService.findById(id));
     }
 }

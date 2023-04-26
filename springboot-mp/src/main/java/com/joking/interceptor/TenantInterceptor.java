@@ -20,23 +20,23 @@ public class TenantInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String tenantId = request.getHeader(TENANT_ID);
-        log.info("request header tenantId : {}", tenantId);
-        if (StringUtils.hasText(tenantId)) {
-            DynamicDataSourceContextHolder.push("tenantDs" + tenantId);
-        } else {
-            DynamicDataSourceContextHolder.push(null);
-        }
+//        String tenantId = request.getHeader(TENANT_ID);
+//        log.info("request header tenantId : {}", tenantId);
+//        if (StringUtils.hasText(tenantId)) {
+//            DynamicDataSourceContextHolder.push("tenantDs" + tenantId);
+//        } else {
+//            DynamicDataSourceContextHolder.push(null);
+//        }
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        DynamicDataSourceContextHolder.clear();
+//        DynamicDataSourceContextHolder.clear();
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        DynamicDataSourceContextHolder.clear();
+//        DynamicDataSourceContextHolder.clear();
     }
 }

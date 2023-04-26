@@ -12,23 +12,23 @@ spring:
           username: dev
           password: Devu3er-
           driver-class-name: com.mysql.cj.jdbc.Driver
-        druid:
-          min-idle: 10
-          max-wait: 6000
-          max-active: 100
-          initial-size: 10
-          pool-prepared-statements: false
-          max-pool-prepared-statement-per-connection-size: 10
-          time-between-eviction-runs-millis: 60000
-          min-evictable-idle-time-millis: 300000
-          keep-alive: false
-          filters: stat
-          test-on-borrow: false
-          test-on-return: false
-          test-while-idle: true
-          stat-view-servlet:
-            enabled: true
-            allow: 127.0.0.1
-            login-username: lepu_user
-            login-password: G!@a
-            url-pattern: /druid/*
+    druid:
+      min-idle: 10
+      max-wait: 6000
+      max-active: 100
+      initial-size: 10
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 10
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      keep-alive: false
+      filters: stat
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      stat-view-servlet:
+        enabled: true
+        allow: 127.0.0.1
+        login-username: lepu_user
+        login-password: G!@a
+        url-pattern: /druid/*
