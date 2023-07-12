@@ -34,19 +34,25 @@ public class Application implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        DynamicDataSourceContextHolder.push("tenantDs4");
 
+//        auditFlowService.selectTest();
+//
+//        auditFlowService.insertTest();
+//
+//
+//        DynamicDataSourceContextHolder.push("tenantDs4");
+//
 //        AuditFlow auditFlow = auditFlowService.findById(1234);
 //        System.out.println(auditFlow);
-
-        log.info("spring boot version : {}", SpringBootVersion.getVersion());
-
-
-        String implementationVersion = Application.class.getPackage().getImplementationVersion();
-        System.out.println(implementationVersion);
-
-        String druidVersion = Package.getPackage("com.alibaba.druid")
-                .getImplementationVersion();
-        System.out.println(druidVersion);
+//
+//        log.info("spring boot version : {}", SpringBootVersion.getVersion());
+//
+//
+//        String implementationVersion = Application.class.getPackage().getImplementationVersion();
+//        System.out.println(implementationVersion);
+//
+//        String druidVersion = Package.getPackage("com.alibaba.druid")
+//                .getImplementationVersion();
+//        System.out.println(druidVersion);
     }
 }

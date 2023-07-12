@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joking.mapper.AuditFlowMapper">
+
+    <insert id="insertTest">
+        INSERT INTO `t_audit_flow` (`id`, `template_code`, `flow_code`, `flow_type`, `flow_name`, `init_user_code`, `init_user_name`, `relate_id`, `audit_status`, `reject_reason_code`, `reject_reason`, `remark`, `delete_flag`, `create_time`, `create_user`, `update_time`, `update_user`, `audit_start_time`, `audit_end_time`)
+        VALUES
+        ('1', 'SL00002', 'SPL1637690566218809345', 2, '下单审核', 'MD16792792666914567', '张博企业审核不通过', 'LMH0801679290832266981', 3, 'SR00002', '与商定内容不符', '我是补充说明哈哈', 0, '2023-03-20 13:40:32', 'MD16792792666914567', '2023-03-20 15:37:03', 'zbdiquywy01', NULL, NULL);
+    </insert>
+
+
+    <select id="selectTest" resultType="com.joking.entity.dto.OrderResultDTO">
+        SELECT o.order_code,o.store_code,si.enterprise_name store_name,o.coop_type,o.payable_amount amount,o.status,
+        CASE WHEN o.aftersale_status is null THEN 3 ELSE o.aftersale_status END aftersale_status,o.ship_status,
+        GROUP_CONCAT(toi.product_name) setMealName,o2.activityType,o.business_code,o.business_name,o.audit_status,o.create_time,
+        si.cooperation_mode storeCoopType,si.`status` storeStatus
+        from t_order o
+        JOIN t_order_item toi on o.order_code = toi.order_code and toi.delete_flag = 0
+        JOIN t_store_info si on o.store_code = si.store_code
+        LEFT JOIN (SELECT GROUP_CONCAT(DISTINCT oa.acitvity_policy_name) activityType,oa.order_code from  t_order_activity oa where oa.delete_flag = 0 group by oa.order_code) o2 on o2.order_code = o.order_code
+    </select>
+
+</mapper>

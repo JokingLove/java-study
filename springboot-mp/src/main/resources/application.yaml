@@ -32,3 +32,12 @@ spring:
         login-username: lepu_user
         login-password: G!@a
         url-pattern: /druid/*
+
+mybatis-plus:
+  configuration:
+    log-impl=org:
+      apache:
+        ibatis:
+          logging:
+            stdout:
+              StdOutImpl: org.apache.ibatis.logging.stdout.StdOutImpls
